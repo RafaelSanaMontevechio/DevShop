@@ -24,6 +24,20 @@ const initialUser = db => async () => {
     }
 }
 
+//método de login, verifica o usuário e a senha com o "bcrypt.compare"
+const login = db => async (email, passwd) => {
+    const user = await db('users').select('*').where('email', email);
+    if (user.length === 0) {
+        throw new Error('Invalid user');
+    }
+    if (!bcrypt.compareSync(passwd, user[0].passwd)) {
+        throw new Error('Invalid user 2');
+    }
+
+    return user[0];
+}
+
 module.exports = {
-    initialUser
+    initialUser,
+    login
 }
