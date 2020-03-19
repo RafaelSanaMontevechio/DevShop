@@ -1,47 +1,52 @@
-const slug = require('../utils/slug');
-const Joi = require('@hapi/joi');
+const init = db => {
 
-const createSchema = Joi.object().keys({
-    category: Joi.string().min(5).max(245).required(),
-    descripton: Joi.string().min(5).required()
-});
+    const slug = require('../utils/slug');
+    const validation = require('../utils/validation');
+    const Joi = require('@hapi/joi');
 
-const getCategories = db => async () => {
-    const categories = await db('categories').select('*');
-    const categoriesWithSlug = categories.map(category => {
-        const newCategory = { ...category, slug: slug(category.category) }
-        return newCategory
+    const createSchema = Joi.object().keys({
+        category: Joi.string().min(5).max(245).required(),
+        descripton: Joi.string().min(5).required()
     });
-    return categoriesWithSlug
-}
 
-const getCategoryById = db => async (id) => {
-    const category = await db('categories').select('*').where('id', id)
-    return category
-}
+    const getCategories = async () => {
+        const categories = await db('categories').select('*');
+        const categoriesWithSlug = categories.map(category => {
+            const newCategory = { ...category, slug: slug(category.category) }
+            return newCategory
+        });
+        return categoriesWithSlug
+    }
 
-const extractErrors = error => {
-    return error.details.reduce((prev, curr) => {
-        if (prev[curr.path[0]]) {
-            prev[curr.path[0]].push(curr.type);
-        } else {
-            prev[curr.path[0]] = [curr.type];
-        }
-        return prev;
-    }, {});
-}
+    const getCategoryById = async (id) => {
+        const category = await db('categories').select('*').where('id', id)
+        return category
+    }
 
-const createCategory = db => async (category) => {
-    const { error, value } = Joi.validate(category, createSchema, { abortEarly: false, stripUnknown: true });
-    if (error) {
-        throw new Error({ message: 'validation', error: extractErrors(error) });
-    } else {
+    const createCategory = async (category) => {
+        const value = validation.validation(category, createSchema);
         await db('categories').insert(value);
+        return true;
+    }
+
+    const updateCategory = async (id, category) => {
+        const value = validation.validation(category, createSchema);
+        await db('categories').where({ id }).update(value);
+        return true;
+    }
+
+
+    const removeCategory = async (id) => {
+        await db('categories').where({ id }).del();
+    }
+    
+    return {
+        getCategories,
+        getCategoryById,
+        createCategory,
+        updateCategory,
+        removeCategory
     }
 }
 
-module.exports = {
-    getCategories,
-    getCategoryById,
-    createCategory
-}
+module.exports = init

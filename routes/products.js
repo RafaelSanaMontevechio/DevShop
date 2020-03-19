@@ -1,8 +1,8 @@
 const init = db => {
     const router = require('express').Router();
-    const productsController = require('../controllers/products');
+    const productsController = require('../controllers/products')(db);
 
-    router.get('/:id/:slug', productsController.getProduct(db));
+    router.get('/:id/:slug', productsController.getProduct);
 
     return router
 }

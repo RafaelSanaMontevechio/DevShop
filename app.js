@@ -7,7 +7,7 @@ const init = db => {
     const path = require('path');
 
     const routes = require('./routes');
-    const category = require('./models/category');
+    const category = require('./models/category')(db);
 
     app.set('view engine', 'ejs');
     app.set('views', path.join(__dirname, 'views'));
@@ -22,7 +22,7 @@ const init = db => {
 
     /** Middleware - tudo que é chamado no express passa antes por ele */
     app.use(async (req, res, next) => {
-        const categories = await category.getCategories(db)();
+        const categories = await category.getCategories();
         const { user } = req.session;
         /** Envia dados de um middleware para a frente da aplicação */
         res.locals = {

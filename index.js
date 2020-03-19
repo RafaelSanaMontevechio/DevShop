@@ -9,9 +9,9 @@ const db = require('knex')({
 });
 
 /** Visualiza as queries que estão sendo geradas pelo knex */
-db.on('query', query => {
-    console.log('SQL:', query.sql);
-});
+// db.on('query', query => {
+//     console.log('SQL:', query.sql);
+// });
 
 const app = require('./app')(db);
 const port = process.env.PORT || 3000;
