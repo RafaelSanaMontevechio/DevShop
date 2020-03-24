@@ -20,7 +20,7 @@
     <div class="container">
         <div class="row">
             <main class="col-sm-12">
-                <% products.forEach( product => { %>
+                <% products.data.forEach( product => { %>
                 <article class="card card-product">
                     <div class="card-body">
                         <div class="row">
@@ -70,7 +70,8 @@
                                     <br>
                                     <p>
                                         <a href="#" class="btn btn-primary"> Buy now </a>
-                                        <a href="/produto/<%- product.id %>/slug" class="btn btn-secondary"> Details </a>
+                                        <a href="/produto/<%- product.id %>/slug" class="btn btn-secondary"> Details
+                                        </a>
                                     </p>
                                     <a href="#"><i class="fa fa-heart"></i> Add to wishlist</a>
                                 </div> <!-- action-wrap.// -->
@@ -79,6 +80,31 @@
                     </div> <!-- card-body .// -->
                 </article> <!-- card product .// -->
                 <% }) %>
+                <nav aria-label="Mais produtos">
+                    <ul class="pagination justify-content-center">
+                        <% if(products.pagination.currentPage>0) { %>
+                        <li class="page-item ">
+                            <a class="page-link"
+                                href="?pageSize=<%- products.pagination.pageSize %>&currentPage=<%- products.pagination.currentPage - 1 %>"
+                                tabindex="-1" aria-disabled="true">Anterior</a>
+                        </li>
+                        <% } %>
+                        <% for(let i = 0; i <products.pagination.totalPages; i++) { %>
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?pageSize=<%- products.pagination.pageSize %>&currentPage=<%- i %>"><%= (i+1) %></a>
+                        </li>
+                        <% } %>
+                        <% if(products.pagination.totalPages - 1 > products.pagination.currentPage) { %>
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?pageSize=<%- products.pagination.pageSize %>&currentPage=<%- products.pagination.currentPage + 1 %>">Próxima</a>
+                        </li>
+                        <% } %>
+                    </ul>
+                </nav>
+
+
             </main> <!-- col.// -->
         </div>
     </div> <!-- container .//  -->
